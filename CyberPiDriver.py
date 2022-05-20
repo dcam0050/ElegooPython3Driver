@@ -143,8 +143,8 @@ class CyberPiDriver:
         # Take into consideration self.use_effectors and self.move_around when initialising motors
         # Success return True
         # Failure return False
-        pantilthat.pan(0)
-        pantilthat.tilt(0)
+        # pantilthat.pan(0)
+        # pantilthat.tilt(0)
         return True
 
     def motor_set(self, motor_sample):
