@@ -12,6 +12,27 @@ import os
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import pantilthat
+import asyncio
+import websocket
+import os
+from enum import Enum
+
+defaultIP = "192.168.1.227"
+
+
+class Movement(Enum):
+    UP = "1"
+    DOWN = "2"
+    LEFT = "3"
+    RIGHT = "4"
+    UP_LEFT = "5"
+    UP_RIGHT = "6"
+    DOWN_LEFT = "7"
+    DOWN_RIGHT = "8"
+    TURN_LEFT = "9"
+    TURN_RIGHT = "10"
+    STOP = "0"
+
 
 class CyberPiDriver:
     def __init__(self, robot_model, robot_name):
@@ -38,7 +59,19 @@ class CyberPiDriver:
             Channels=1,
             SizeInFrames=True,
             TransmitRate=20
-        )        
+        )
+
+        ESP_IP = os.getenv('ESP_IP')
+        if ESP_IP == "":
+            logging.info("ESP IP not provided. Using default - {}".format(defaultIP))
+            ESP_IP = defaultIP
+
+        self.esp_url = "http://{}/ws".format(ESP_IP)
+        logging.info("Sending test command to {}".format(self.esp_url))
+
+        self.esp_websocket_client = websocket.WebSocket()
+        self.esp_websocket_client.connect(self.esp_url)
+        self.esp_websocket_client.send("5")
 
     def get_audio_parameters(self):
         return self.audio_params
@@ -129,11 +162,11 @@ class CyberPiDriver:
         pantilthat.tilt(0)
         return True
 
-    def motor_set(self, joint_angles_list):
-        # p = joint_angles_list[0] + joint_angles_list[1]
-        print(joint_angles_list)
-        # pantilthat.pan(joint_angles_list[0])
-        # pantilthat.tilt(joint_angles_list[1])
+    def motor_set(self, motor_sample):
+        loco = [motor_sample.Locomotion.Position.x,
+                motor_sample.Locomotion.Position.y,
+                motor_sample.Locomotion.Rotation.z]
+
         return True
 
     def motor_close(self):
