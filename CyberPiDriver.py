@@ -3,6 +3,7 @@
 # Author: Daniel Camilleri
 
 import logging
+import time
 from time import sleep
 import numpy as np
 import cv2
@@ -57,6 +58,8 @@ class CyberPiDriver:
         self.esp_websocket_client = websocket.WebSocket()
         self.esp_websocket_client.connect(self.esp_url)
         self.esp_websocket_client.send("5")
+        time.sleep(1)
+        self.esp_websocket_client.send("0")
 
     def get_audio_parameters(self):
         return self.audio_params
