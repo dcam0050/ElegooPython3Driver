@@ -51,7 +51,7 @@ class CyberPiDriver:
             logging.info("ESP IP not provided. Using default - {}".format(defaultIP))
             ESP_IP = defaultIP
 
-        self.esp_url = "http://{}/ws".format(ESP_IP)
+        self.esp_url = "ws://{}/ws".format(ESP_IP)
         logging.info("Sending test command to {}".format(self.esp_url))
 
         self.esp_websocket_client = websocket.WebSocket()
