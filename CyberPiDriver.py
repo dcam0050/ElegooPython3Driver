@@ -39,7 +39,7 @@ class CyberPiDriver:
 
         # AUDITION PARAMETERS
         self.audio_params = utils.AudioParams(
-            Backends=["pulseaudio"],
+            Backends=["alsa"],
             SampleRate=32000,
             Channels=1,
             SizeInFrames=True,
