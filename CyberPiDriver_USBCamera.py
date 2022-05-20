@@ -45,28 +45,46 @@ class CyberPiDriver:
 
     # ----------------------------------VISION--------------------------------
     def vision_initialise(self):
-        self.camera = PiCamera()
-        self.camera.resolution = (self.hres, self.vres)
-        self.camera.framerate = 30
-        self.rawCapture = PiRGBArray(self.camera, size=(self.hres, self.vres))
-        self.captureObject = self.camera.capture_continuous(self.rawCapture, format="rgb", use_video_port=True)
-        self.first = False
-        return True
+        # Success return True
+        # Failure return False
+        try:
+            self.vid_capture = cv2.VideoCapture()
+            self.vid_capture.open(0)
+            test_img = self.vid_capture.read()
+
+            if len(test_img[1].shape) == 3:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(e)
+            return False
 
     def vision_get(self):
-        frame = next(self.captureObject)
-        if frame is None:
+         # Success return 3 dimensional numpy array
+        # Failure return None
+        result, image = self.vid_capture.read()
+
+        if result:
+            # image = cv2.resize(image, (120, 160))
+            # image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            # image = cv2.flip(image, 1)
+            image_frame = utils.PyImageSample(
+                source="RightCamera",
+                image_type=utils.ImageSample.RGB,
+                compression=utils.ImageSample.RAW,
+                transform=utils.Transform()
+            )
+            img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+            image_frame.encode_image(img)
+            return image_frame
+        else:
             return None
 
-        image = cv2.flip(frame.array, -1)
-        self.mainCamera.encode_image(image)
-    
-        # clear the stream in preparation for the next frame
-        self.rawCapture.truncate(0)         
-        return self.mainCamera
-
     def vision_close(self):
-        self.camera.close()
+        # No return
+        self.vid_capture.release()
 
     # ----------------------------------AUDITION--------------------------------
 
@@ -131,7 +149,7 @@ class CyberPiDriver:
     
     def speech_set(self, sentence):
         # No return
-        self.log.info("ExampleRobot says: '" + sentence + "'")
+        self.log.info("Elegoo Robot says: '" + sentence + "'")
     
     def speech_close(self):
         # No return
