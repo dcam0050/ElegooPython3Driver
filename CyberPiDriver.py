@@ -12,26 +12,11 @@ import os
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 import pantilthat
-import asyncio
 import websocket
 import os
 from enum import Enum
 
 defaultIP = "192.168.1.227"
-
-
-class Movement(Enum):
-    UP = "1"
-    DOWN = "2"
-    LEFT = "3"
-    RIGHT = "4"
-    UP_LEFT = "5"
-    UP_RIGHT = "6"
-    DOWN_LEFT = "7"
-    DOWN_RIGHT = "8"
-    TURN_LEFT = "9"
-    TURN_RIGHT = "10"
-    STOP = "0"
 
 
 class CyberPiDriver:
@@ -238,3 +223,17 @@ class CyberPiDriver:
     def emotion_close(self):
         # No return
         pass
+
+
+class Movement(Enum):
+    UP = "1"
+    DOWN = "2"
+    LEFT = "3"
+    RIGHT = "4"
+    UP_LEFT = "5"
+    UP_RIGHT = "6"
+    DOWN_LEFT = "7"
+    DOWN_RIGHT = "8"
+    TURN_LEFT = "9"
+    TURN_RIGHT = "10"
+    STOP = "0"

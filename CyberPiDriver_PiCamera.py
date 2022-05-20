@@ -13,6 +13,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import pantilthat
 
+
 class CyberPiDriver:
     def __init__(self, robot_model, robot_name):
 
