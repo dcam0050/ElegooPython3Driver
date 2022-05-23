@@ -15,7 +15,6 @@ from picamera import PiCamera
 import pantilthat
 import websocket
 import os
-from enum import Enum
 
 defaultIP = "192.168.1.227"
 
@@ -53,13 +52,8 @@ class CyberPiDriver:
             ESP_IP = defaultIP
 
         self.esp_url = "ws://{}/ws".format(ESP_IP)
-        logging.info("Sending test command to {}".format(self.esp_url))
-
         self.esp_websocket_client = websocket.WebSocket()
-        self.esp_websocket_client.connect(self.esp_url)
-        self.esp_websocket_client.send("5")
-        time.sleep(1)
-        self.esp_websocket_client.send("0")
+
 
     def get_audio_parameters(self):
         return self.audio_params
@@ -97,8 +91,11 @@ class CyberPiDriver:
                 compression=utils.ImageSample.RAW,
                 transform=utils.Transform()
             )
+
             img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            image_frame.encode_image(img)
+            resized = cv2.resize(img, (640, 480))
+
+            image_frame.encode_image(resized)
             return image_frame
         else:
             return None
@@ -135,7 +132,7 @@ class CyberPiDriver:
         # joints defines subset of joints to return for robot
         # Success return numpy vector (array with 1 dimension or singleton 2nd dimension)
         # Failure return None
-        return [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+        return [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     
     def proprioception_close(self):
         # No return
@@ -148,12 +145,26 @@ class CyberPiDriver:
         # Failure return False
         # pantilthat.pan(0)
         # pantilthat.tilt(0)
+        logging.info("Sending test command to {}".format(self.esp_url))
+        self.esp_websocket_client.connect(self.esp_url)
+
+        self.esp_websocket_client.send("050:050:100")
+        time.sleep(2)
+        self.esp_websocket_client.send("050:050:050")
+
         return True
 
     def motor_set(self, motor_sample):
         loco = [motor_sample.Locomotion.Position.x,
                 motor_sample.Locomotion.Position.y,
                 motor_sample.Locomotion.Rotation.z]
+
+        p1 = loco[0]*50 + 50
+        p2 = loco[1]*50 + 50
+        p3 = loco[2]*50 + 50
+
+        message = str(p1)+str(p2)+str(p3)
+        self.esp_websocket_client.send(message)
 
         return True
 
@@ -226,17 +237,3 @@ class CyberPiDriver:
     def emotion_close(self):
         # No return
         pass
-
-
-class Movement(Enum):
-    UP = "1"
-    DOWN = "2"
-    LEFT = "3"
-    RIGHT = "4"
-    UP_LEFT = "5"
-    UP_RIGHT = "6"
-    DOWN_LEFT = "7"
-    DOWN_RIGHT = "8"
-    TURN_LEFT = "9"
-    TURN_RIGHT = "10"
-    STOP = "0"
