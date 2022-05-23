@@ -150,6 +150,8 @@ class CyberPiDriver:
 
         self.esp_websocket_client.send("050:050:100")
         time.sleep(2)
+        self.esp_websocket_client.send("050:050:0")
+        time.sleep(2)
         self.esp_websocket_client.send("050:050:050")
 
         return True
